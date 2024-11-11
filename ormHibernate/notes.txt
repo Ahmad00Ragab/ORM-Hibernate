@@ -1,0 +1,94 @@
+ORM Notes
+What is ORM?
+It is a programing technique that enables the application that is written in OOP to deal with the database with Objects. Specifically ORM is used in mapping the classes in programming language like Java to a table in a relational database like MySQL.
+
+What is the meaning of that: ORM Enables the concept of abstraction?
+ORM abstract database layer, so don’t need to write SQL queries.
+
+What is the meaning of the associative entities in JPA?
+In JPA (java persistence API), associative entities are entities that have relationships to each other represent in the object model.
+These relationships are established using the annotation in JPA.
+
+What is the meaning of entities?
+Entity refers to a table inside the database and is represented in the JPA with a class.
+
+What are the types of associative entities?
+1. one to one
+2. one to many
+3. many to many 
+
+What are the fetching strategies?
+In JPA (java persistence API), fetching strategies determine how and when the associated entities are loaded from the database. 
+
+What are the types of fetching strategies?
+1. Eager strategy
+2. Lazy  strategy
+
+Why we use persistence.xml file in our project?
+Because we need to configure the connection with the database and also it contains the configuration for the persistence unit inside our project.
+
+What is the concept of ‘persistence’ in java frameworks and APIs like JPA and Hibernate?
+Java Persistence Frameworks are a set of tools and libraries that gives the developer the ability to (store, retrieve and manage) data of a relational database with a java application.
+These frameworks simplify the process of interaction with the database  make it in OOP concepts like the regular ones 
+
+What is the difference between API and Framework?
+API: a set of rules, protocols and tools that handles the communications between software components. Ex. JDBC  handles the communication between the java app and the database.
+
+Framework: it is a collection of tools libraries and best practices that provide a way to for program structuring.  Ex. Spring Framework
+
+
+
+What is Persistence Context?
+It is a set of entity instances that are managed by Entity manager, and it represents the first level-cache where the entity instances are stored.
+
+What is JPA, Hibernate, Jakararta?
+JPA          : Java Persistence API , a specification for how to use the ORM Concepts 
+Hibernate    : a framework that is based on the concept of ORM and it is the implementation of JPA
+Jakarata     : it is the umbrella project that contains the Jakarta persistence specifications 
+
+
+What is Jackarta EE?
+it is the EnterPrise Edition of JAVA. (user for large scale application)
+it is a set of APIs and tools that provides the functionality for building large scale enterprise applications.
+
+which is faster, Hibernate or JDBC?
+it depends on the complexity of the query and the size of the data. 
+Hibernate is faster when the query is complex and the data is large. JDBC is faster when the query is simple and the data is small.
+
+
+which is thread-safe and which is not : EntityManagerFactory  and EntityManager?
+EntityManagerFactory : it is thread-safe. 
+EntityManager        : it is not thread-safe.
+
+what is the purpose of EntityManagerFactory?
+it is a heavy weight object that is needed to be created once only in the application.
+we use it to get the EntityManager instance. and setup the database connection and configuration.
+it is a singleton object.
+
+What is the purpose of EntityManager?
+it is a light weight object that is needed to be created for each transaction.
+we use it to perform crud operations [(persist=Create),(find=Read),(merge=Update),(remove=Delete)]
+
+what do you know about the concept of ‘detached’ entity?
+A detached entity is an entity that is no longer associated with the persistence context. 
+It is an entity that has been removed from the persistence context and is no longer managed by the entity manager.
+
+what does make the entity enters the 'detached' state?
+1. when the entity is removed from the persistence context.
+2. when the entity manger is closed 
+3. when the entity is detached explicitly using the detach() method of the entity manager.
+
+What are the Entity states in its life-cycle?
+1. new (Transient)      : when it you create and instance of the entity but it is not associated with the persistence context.
+2. managed (persistent) : when it is associated with a persistent context and is managed by the entity manager. (find(), persist())
+3. detached             : when the entity is no longer associated with any persistence context. (detach(),em.close())
+4. removed (or deleted) : when the entity is removed from the persistence context. (remove())
+
+how to  reattach a ‘detached’ entity?
+by using .merge() method.
+
+what is the concept of the first-level of cache of Hibernate?
+the first-level of cache is the persistence context which contains the instances of entities managed by the entity manager
+in the current transaction, 
+- This is a feature of Hibernate’s first-level cache (or persistence context),
+which avoids unnecessary database queries for entities that are already tracked within the current transaction.
