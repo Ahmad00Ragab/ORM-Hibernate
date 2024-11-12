@@ -1,4 +1,5 @@
-ORM Notes
+" ORM NOTES "
+
 What is ORM?
 It is a programing technique that enables the application that is written in OOP to deal with the database with Objects. Specifically ORM is used in mapping the classes in programming language like Java to a table in a relational database like MySQL.
 
@@ -92,3 +93,114 @@ the first-level of cache is the persistence context which contains the instances
 in the current transaction, 
 - This is a feature of Hibernate’s first-level cache (or persistence context),
 which avoids unnecessary database queries for entities that are already tracked within the current transaction.
+
+What does em.merge() do?
+it re attach a 'detached' entity, which means inserting it again in the persistence consist after the modifications done on it.
+also we can use it to create an instance that is not existed in the datbase.
+ex : 
+em.getTransaction().begin();
+Product product = new Product();
+product.setId(1);
+product.setName("product1");
+em.merge(product); // here is inside the persist context and marked for (creation or update (didn't know till now))
+em.getTransaction().commit; // checks if the a product with id=1 exists, if yes it will update it, if not it will insert it as a new one.
+
+when the data is inserted in the database?
+it is inserted in the database, when the transaction is only is committed or flushed.
+other than this , every thing is marked in the persistence context which is a mirror to the datbase.
+
+what is the difference between the flush() and commit() methods?
+The flush() method is used to synchronize the persistence context with the database, 
+whereas the commit() method is used to end the current transaction and make the changes permanent.
+
+
+what is the difference betwen em.find() and em.getReference()?
+find()         : loads the entity with its data 
+getReference() : loads the entity but not its data, it is a proxy to the entity, loads the data when it is first accessed (lazy loading)
+
+
+what is em.refresh()?
+it is used to referesh or overwrite the current state of the entity with with version existed in the database. (make them equal)
+
+what is the difference between those two lines that are existed in the persistence.xml file?
+<property name="hibernate.hbm2ddl.auto" value="update"/>
+<property name="jakarta.persistence.schema-generation.database.action" value="drop-and-create"/>
+both are use to control the schema of the database at application startup,
+first one is for hibernate and the second one is for jakarta persistence. and we should use only one of them.
+
+
+what do you know about thread Local pattern?
+The ThreadLocal pattern is a design pattern in Java that uses the ThreadLocal class to store data (Like EntityManager) that is unique to each thread
+and is not shared with other threads. This ensures each request has its own EntityManager instance.
+
+
+what is JPQL?
+stands for Java Persistence Query Lanaguage which is a query language that is used to query the entities from the Persistence Context
+rather than query the databae tables direclty using SQL,  this makes it agnostic to any database.
+
+
+what are the ways of parameter binding?
+1. use named parameters      [:name]    : 
+String stringQuery = "from User u where u.name like :name";
+Query q = em.createQuery(stringQuery).setParameter("name", ahmad);
+2. use positional parameters [ ?1 ]      :
+String stringQuery = "from User u where u.name like ?1";
+Query q = em.createQuery(stringQuery).setParameter(1, ahmad);
+
+and for both : 
+List<User> resultSet = q.getResultSet();
+
+
+
+what is Criteria API and what is the difference between it and JPQL?
+Criteria API  is a way to create the Query with SQL injection or the concatenation of the Strings to create the query.
+provides you with some apis to build a complex query with multiple choices or filters.
+
+- als Criteria API is an alternative to using JPQL (Java Persistence Query Language) to create queries. 
+The Criteria API allows for dynamic query creation, making it particularly useful when you 
+need to build complex or dynamic queries at runtime.
+
+what is Entity Graph?
+it is an optimization for the lazy loading of the entity, it is a way to specify which fields 
+of the entity should be loaded (lazily) and which fields of the entity should loaded (eagerly) and all this on a per-query basis
+it is used to reduce the number of database queries.
+
+what are the types of Entity Graphs that we define?
+1. fetch Graph  : this is the default graph, it is used to fetch all the fields that is defined in the graph and left the other to be lazy loaded.
+2. load  Graph  : it is used to fetch all the fields in the graph eagrly and left the other to their behavior.
+
+
+in a repo method, like 
+@Query("SELECT p FROM Product p WHERE " +
+         "(:categoryId IS NULL OR p.category.id = :categoryId) AND " +
+         "((:brands IS NULL OR p.brand IN :brands) OR " +
+         "(:materials IS NULL OR p.material IN :materials) OR " +
+         "(p.price BETWEEN :minPrice AND :maxPrice)) AND" +
+         "(p.isDeleted = false)")
+Page<Product> findByFilters(
+         @Param("categoryId") Integer categoryId,
+         @Param("brands") List<String> brands,
+         @Param("materials") List<String> materials,
+         @Param("minPrice") Float minPrice,
+         @Param("maxPrice") Float maxPrice,
+         Pageable pageable
+);, 
+
+if i would like to convert it from Nammed parameter to positional parameter for parameter binding?
+I would change the code to be like this:
+@Query("SELECT p FROM Product p WHERE (?1 IS NULL OR p.category.id = ?1) " +
+       "AND (?2 IS NULL OR p.brand IN ?2) " +
+       "AND (?3 IS NULL OR p.material IN ?3) " +
+       "AND (p.price BETWEEN ?4 AND ?5) " +
+       "AND (p.isDeleted = false)")
+Page<Product> findByFilters(
+        Integer categoryId,
+        List<String> brands,
+        List<String> materials,
+        Float minPrice,
+        Float maxPrice,
+        Pageable pageable
+);
+
+- Positional parameters are referenced by their position in the method parameter list.
+- They must appear in the order in which the method parameters are declared.
